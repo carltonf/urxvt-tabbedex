@@ -130,7 +130,8 @@ sub refresh {
    }
 
    for my $tab (@{ $self->{tabs} }) {
-      my $name = $tab->{name} ? $tab->{name} : $idx;
+      # always number tabs
+      my $name = $tab->{name} ? "$idx $tab->{name}" : $idx;
       my $act = $self->tab_activity_mark($tab);
       my $txt = sprintf "%s%s%s", $act, $name, $act;
       my $len = length $txt;
@@ -519,11 +520,27 @@ sub tab_key_press {
          $self->move_tab($tab, $keysym - 0xff52);
          return 1;
       }
+
+      # Ctrl+<Num> to select tab
+      if ($keysym <= 0x0039 && $keysym >= 0x0030) {
+         $self->select_tab_by_num($keysym - 0x0030);
+         return 1;
+      }
    }
 
    ();
 }
 
+sub select_tab_by_num {
+   my($self, $idx) = @_;
+
+   if (@{ $self->{tabs} } > $idx) {
+
+      $self->make_current ($self->{tabs}[$idx]);
+   }
+    
+   ();
+}
 
 sub tab_property_notify {
    my ($self, $tab, $event) = @_;
