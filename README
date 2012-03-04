@@ -1,0 +1,19 @@
+urxvt-tabbedex
+================
+
+To add features that are in gnome-terminal
+
+
+Tab index and selection
+----------------
+1. Every tab is always numbered from left to right, starting from 0.
+2. Use Ctrl+<num> to switch to the first 10 tabs.
+
+TODO add user commands for custom keysym settings
+
+
+Keep current working directory [experimental]
+----------------
+1. new tabbed-terminal with the same working directory as current one
+
+TODO clean up code and find a better way to implement
