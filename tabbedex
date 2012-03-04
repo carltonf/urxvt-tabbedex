@@ -193,9 +193,30 @@ sub new_tab {
 
    push @urxvt::TERM_EXT, urxvt::ext::tabbedex::tab::;
 
+   # a very dirty hacking on getting the cwd of current terminal right
+   # %{$urxvt::TERM->env}->{"PWD"} doesn't gets updated with current terminal
+   # TODO how the 'tab_title' gets updated in the first place?
+   my $cwd;
+   if ( $self->{tabs} > 1){
+       my @str = $self->XGetWindowProperty($self->parent, $self->{tab_title});
+       my $HOME = %{$urxvt::TERM->env}->{"HOME"};
+       
+       $cwd = $str[2];
+       $cwd =~ s/^.*://g;
+       $cwd =~ s/~/$HOME/g;
+
+       # ensure absolute path
+       use Cwd;
+       $cwd = Cwd::abs_path($cwd);
+
+       # ensure permissions o/w set back to home
+       $cwd = $HOME unless (-x $cwd && -r $cwd);
+
+   }
+   
    my $term = new urxvt::term
       $self->env, $urxvt::RXVTNAME,
-      -embed => $self->parent,
+      -embed => $self->parent, -cd => "$cwd",
       @argv;
 }
 
