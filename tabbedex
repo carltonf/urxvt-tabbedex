@@ -202,18 +202,19 @@ sub new_tab {
        my $HOME = %{$urxvt::TERM->env}->{"HOME"};
        
        $cwd = $str[2];
-       $cwd =~ s/^.*://g;
-       $cwd =~ s/~/$HOME/g;
+       for ($cwd){
+           s/^.*://g;
+           s/~/$HOME/g;
 
-       # ensure absolute path
-       use Cwd;
-       $cwd = Cwd::abs_path($cwd);
+           # ensure absolute path
+           use Cwd;
+           $_ = Cwd::abs_path($_);
 
-       # ensure permissions o/w set back to home
-       $cwd = $HOME unless (-x $cwd && -r $cwd);
-
+           # ensure permissions o/w set back to home
+           $_ = $HOME unless (-x && -r);
+       }
    }
-   
+
    my $term = new urxvt::term
       $self->env, $urxvt::RXVTNAME,
       -embed => $self->parent, -cd => "$cwd",
